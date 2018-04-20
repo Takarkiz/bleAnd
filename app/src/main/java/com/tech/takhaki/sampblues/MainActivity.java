@@ -49,6 +49,7 @@ public class MainActivity extends AppCompatActivity {
     private Context context = MyApplication.getInstance();
 
     private final String BLUETOOTH_TAG = "Bluetooth";
+    public String carData = "";
 
     public void scanStart(View v){
         scan(true);
@@ -184,9 +185,8 @@ public class MainActivity extends AppCompatActivity {
 
             for (BluetoothGattService s : serviceList) {
                 // サービス一覧を取得したり探したりする処理
-                // あとキャラクタリスティクスを取得したり探したりしてもよい
-
-
+                carData = notificationCharacteristic();
+                Log.d(BLUETOOTH_TAG, carData);
             }
         }
     };
@@ -231,9 +231,9 @@ public class MainActivity extends AppCompatActivity {
         }
 
         final byte[] byteData = characteristic.getValue();
-        final String carData = new String(byteData);
+        final String strData = new String(byteData);
 
-        return carData;
+        return strData;
     }
 
     public static class MyApplication extends Application {
