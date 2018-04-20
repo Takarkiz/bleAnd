@@ -21,6 +21,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.TextView;
 
 import java.util.ArrayList;
 import java.util.Dictionary;
@@ -50,7 +51,10 @@ public class MainActivity extends AppCompatActivity {
     private final String BLUETOOTH_TAG = "Bluetooth";
     public String carData = "";
 
+    private TextView resultTextView;
+
     public void scanStart(View v){
+        //今は常に接続できるようになっている
         scan(true);
     }
 
@@ -72,7 +76,7 @@ public class MainActivity extends AppCompatActivity {
                     }
 
                     //スキャンが完了したのでコネクトを開始
-                    connect(context, result.getDevice());
+                    connect(MainActivity.this, result.getDevice());
                 }
 
             }
@@ -159,6 +163,9 @@ public class MainActivity extends AppCompatActivity {
 
         // mBluetoothLeScannerの初期化
         mBluetoothLeScanner = mBluetoothAdapter.getBluetoothLeScanner();
+
+        // Textのid接続
+        resultTextView = (TextView)findViewById(R.id.textView);
     }
 
 
@@ -186,6 +193,7 @@ public class MainActivity extends AppCompatActivity {
                 // サービス一覧を取得したり探したりする処理
                 carData = notificationCharacteristic();
                 Log.d(BLUETOOTH_TAG, carData);
+                resultTextView.setText(carData);
             }
         }
     };
@@ -195,7 +203,7 @@ public class MainActivity extends AppCompatActivity {
     // Gattへの接続要求
     public void connect(Context context, BluetoothDevice device) {
 
-        bluetoothGatt = device.connectGatt(MainActivity.this, false, mGattCallback);
+        bluetoothGatt = device.connectGatt(context, false, mGattCallback);
         bluetoothGatt.connect();
 
     }
