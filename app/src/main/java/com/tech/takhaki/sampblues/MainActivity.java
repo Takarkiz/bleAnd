@@ -1,5 +1,6 @@
 package com.tech.takhaki.sampblues;
 
+import android.app.Application;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothGatt;
@@ -18,9 +19,11 @@ import android.content.Context;
 import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 
 import java.util.ArrayList;
+import java.util.Dictionary;
 import java.util.List;
 import java.util.UUID;
 
@@ -43,6 +46,9 @@ public class MainActivity extends AppCompatActivity {
     //取り出したServiceを格納
     private List<BluetoothGattService> serviceList;
     private BluetoothGattCharacteristic characteristic;
+    private Context context = MyApplication.getInstance();
+
+    private final String BLUETOOTH_TAG = "Bluetooth";
 
     public void scanStart(View v){
         scan(true);
@@ -66,7 +72,7 @@ public class MainActivity extends AppCompatActivity {
                     }
 
                     //スキャンが完了したのでコネクトを開始
-                    //connect();
+                    connect(context, result.getDevice());
                 }
 
             }
@@ -155,6 +161,7 @@ public class MainActivity extends AppCompatActivity {
         mBluetoothLeScanner = mBluetoothAdapter.getBluetoothLeScanner();
     }
 
+
     private BluetoothGattCallback mGattCallback = new BluetoothGattCallback() {
         @Override
         public void onConnectionStateChange(BluetoothGatt gatt, int status,
@@ -178,6 +185,8 @@ public class MainActivity extends AppCompatActivity {
             for (BluetoothGattService s : serviceList) {
                 // サービス一覧を取得したり探したりする処理
                 // あとキャラクタリスティクスを取得したり探したりしてもよい
+
+
             }
         }
     };
@@ -204,10 +213,11 @@ public class MainActivity extends AppCompatActivity {
     // キャラクタリスティック設定UUID
     String CHARACTERISTIC_CONFIG = "00002902-0000-1000-8000-00805f9b34fb";
 
-    private void notificationCharacteristic() {
+    private String notificationCharacteristic() {
         // Notification を要求する
-        // characteristicに関しの記述未だ
         boolean registered = bluetoothGatt.setCharacteristicNotification(characteristic, true);
+
+
 
         // Characteristic の Notification 有効化
         if (registered) {
@@ -216,8 +226,31 @@ public class MainActivity extends AppCompatActivity {
 
             descriptor.setValue(BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE);
             bluetoothGatt.writeDescriptor(descriptor);
+
+
+        }
+
+        final byte[] byteData = characteristic.getValue();
+        final String carData = new String(byteData);
+
+        return carData;
+    }
+
+    public static class MyApplication extends Application {
+        private static MyApplication instance = null;
+        @Override
+        public void onCreate() {
+            super.onCreate();
+
+            instance = this;
+        }
+
+        public static MyApplication getInstance() {
+            return instance;
         }
     }
 
 
 }
+
+
