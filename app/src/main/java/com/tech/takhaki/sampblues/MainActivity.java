@@ -46,7 +46,6 @@ public class MainActivity extends AppCompatActivity {
     //取り出したServiceを格納
     private List<BluetoothGattService> serviceList;
     private BluetoothGattCharacteristic characteristic;
-    private Context context = MyApplication.getInstance();
 
     private final String BLUETOOTH_TAG = "Bluetooth";
     public String carData = "";
@@ -196,7 +195,7 @@ public class MainActivity extends AppCompatActivity {
     // Gattへの接続要求
     public void connect(Context context, BluetoothDevice device) {
 
-        bluetoothGatt = device.connectGatt(context, false, mGattCallback);
+        bluetoothGatt = device.connectGatt(MainActivity.this, false, mGattCallback);
         bluetoothGatt.connect();
 
     }
@@ -234,20 +233,6 @@ public class MainActivity extends AppCompatActivity {
         final String strData = new String(byteData);
 
         return strData;
-    }
-
-    public static class MyApplication extends Application {
-        private static MyApplication instance = null;
-        @Override
-        public void onCreate() {
-            super.onCreate();
-
-            instance = this;
-        }
-
-        public static MyApplication getInstance() {
-            return instance;
-        }
     }
 
 
